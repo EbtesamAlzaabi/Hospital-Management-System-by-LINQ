@@ -711,7 +711,118 @@ namespace Hospital_Management_System
         }
 
 
+        // 11 — Search Patient By Name
+        //*************************************************************//
+        public static void SearchPatientByName(HospitalContext context)
+        {
+            Console.Write("Enter patient name: ");
+            string name = Console.ReadLine().ToLower();
 
+            List<Patient> patients = context.Patients
+                .Where(p => p.patientName.ToLower().Contains(name))
+                .ToList();
+
+            if (!patients.Any())
+            {
+                Console.WriteLine("No patient found.");
+                return;
+            }
+
+            foreach (Patient patient in patients)
+            {
+                Console.WriteLine(
+                    $"ID: {patient.patiendId} | Name: {patient.patientName}");
+            }
+        }
+
+
+
+        // 12 —  DailyAppointmentReport
+        //*************************************************************//
+
+        public static void DailyAppointmentReport(HospitalContext context)
+        {
+            Console.Write("Enter date: ");
+            string date = Console.ReadLine();
+
+            var report =
+                context.Appointments
+                .Where(a => a.appointmentDate == date)
+                .Select(a => new
+                {
+                    AppointmentId = a.appointmentId,
+
+                    PatientName = context.Patients
+                        .FirstOrDefault(p => p.patiendId == a.patientId)?
+                        .patientName,
+
+                    DoctorName = context.Doctors
+                        .FirstOrDefault(d => d.doctorId == a.doctorId)?
+                        .doctorName,
+
+                    Status = a.status
+                })
+                .ToList();
+
+            if (!report.Any())
+            {
+                Console.WriteLine("No appointments found.");
+                return;
+            }
+
+            foreach (var item in report)
+            {
+                Console.WriteLine(
+                    $"Appointment: {item.AppointmentId} | " +
+                    $"Patient: {item.PatientName} | " +
+                    $"Doctor: {item.DoctorName} | " +
+                    $"Status: {item.Status}");
+            }
+        }
+
+        // 13 — MostActivePatientReport
+        //*************************************************************//
+
+        public static void MostActivePatientReport(HospitalContext context)
+        {
+            Console.WriteLine("\n=== Most Active Patient Report ===");
+
+            if (!context.Appointments.Any())
+            {
+                Console.WriteLine("No appointments found.");
+                return;
+            }
+
+            var report = context.Appointments
+                .GroupBy(a => a.patientId)
+                .Select(g => new
+                {
+                    PatientId = g.Key,
+
+                    TotalAppointments = g.Count(),
+
+                    CompletedAppointments =
+                        g.Count(a => a.status == "Completed"),
+
+                    CancelledAppointments =
+                        g.Count(a => a.status == "Cancelled")
+                })
+                .OrderByDescending(x => x.TotalAppointments)
+                .FirstOrDefault();
+
+
+
+            Patient patient = context.Patients
+                .FirstOrDefault(p => p.patiendId == report.PatientId);
+
+
+
+            Console.WriteLine($"Patient ID          : {patient.patiendId}");
+            Console.WriteLine($"Patient Name        : {patient.patientName}");
+            Console.WriteLine($"Total Appointments  : {report.TotalAppointments}");
+            Console.WriteLine($"Completed Visits    : {report.CompletedAppointments}");
+            Console.WriteLine($"Cancelled Visits    : {report.CancelledAppointments}");
+        }
 
         //***********************************************************************************//
         public static void Main(string[] args)
@@ -732,16 +843,19 @@ namespace Hospital_Management_System
                 Console.WriteLine("****************************************");
                 Console.WriteLine("Welcom to the Hospital Management System ");
                 Console.WriteLine("****************************************");
-                Console.WriteLine("10. Register Patient");
-                Console.WriteLine("20.Add NEW Doctor");
-                Console.WriteLine("30.View All Patients");
-                Console.WriteLine("40.View All Doctors By Specialization");
-                Console.WriteLine("50.Add Available Time Slot");
-                Console.WriteLine("60.Book Appointment");
-                Console.WriteLine("70.Cancel Appointment");
-                Console.WriteLine("80.Create Medical Record");
-                Console.WriteLine("90.Patient History Report");
-                Console.WriteLine("100.Doctor Revenue Summary");
+                Console.WriteLine("1. Register Patient");
+                Console.WriteLine("2. Add NEW Doctor");
+                Console.WriteLine("3. View All Patients");
+                Console.WriteLine("4. View All Doctors By Specialization");
+                Console.WriteLine("5. Add Available Time Slot");
+                Console.WriteLine("6. Book Appointment");
+                Console.WriteLine("7. Cancel Appointment");
+                Console.WriteLine("8. Create Medical Record");
+                Console.WriteLine("9. Patient History Report");
+                Console.WriteLine("10. Doctor Revenue Summary");
+                Console.WriteLine("11. SearchPatientByName");
+                Console.WriteLine("12. Daily Appointment Report");
+                Console.WriteLine("13. Most Active Patient Report");
                 Console.WriteLine("0. Exit");
                 Console.WriteLine("****************************************");
                 Console.WriteLine("Choose : ");
@@ -752,46 +866,57 @@ namespace Hospital_Management_System
 
                 switch (option)
                 {
-                    case 10:
+                    case 1:
                         RegisterPatient(maincontext);
                         break;
 
-                    case 20:
+                    case 2:
                         AddNewDoctor(maincontext);
                         break;
 
-                    case 30:
+                    case 3:
                         ViewAllPatients(maincontext);
                         break;
 
-                    case 40:
+                    case 4:
                         ViewAllDoctorsBySpecialization(maincontext);
                         break;
 
-                    case 50:
+                    case 5:
                         AddAvailableSlot(maincontext);
                         break;
 
-                    case 60:
+                    case 6:
                         BookAppointment(maincontext);
                         break;
 
-                    case 70:
+                    case 7:
                         CancelAppointment(maincontext);
                         break;
 
-                    case 80:
+                    case 8:
                         CreateMedicalRecord(maincontext);
                         break;
 
-                    case 90:
+                    case 9:
                         GeneratePatientMedicalHistory(maincontext);
                         break;
 
-                    case 100:
+                    case 10:
                         GenerateDoctorWorkloadReport(maincontext);
                         break;
 
+                    case 11:
+                        SearchPatientByName(maincontext);
+                        break;
+
+                    case 12:
+                        DailyAppointmentReport(maincontext);
+                        break;
+
+                    case 13:
+                        MostActivePatientReport(maincontext);
+                        break;
                     case 0:
                         exit = true;
                         break;
