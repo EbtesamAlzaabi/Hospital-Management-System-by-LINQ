@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "h/C9HVTr3mE=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ebtes\\OneDrive\\Desktop\\backent taske in app\\MS Karim\\TASK ABOUT LINQ\\HMS_Ebtesam Alzaabi\\Hospital Management System\\Hospital Management System\\Hospital Management System.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ebtes\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.27\\microsoft.windowsdesktop.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\ebtes\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.27\\microsoft.netcore.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\ebtes\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.27\\microsoft.aspnetcore.app.ref.8.0.27.nupkg.sha512",
+    "C:\\Users\\ebtes\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.27\\microsoft.netcore.app.host.win-x64.8.0.27.nupkg.sha512"
+  ],
+  "logs": []
+}
