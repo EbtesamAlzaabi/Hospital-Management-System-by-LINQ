@@ -1,4 +1,5 @@
 ﻿using Hospital_Management_System.Models;
+using System.Text.RegularExpressions;
 
 namespace Hospital_Management_System
 {
@@ -114,29 +115,11 @@ namespace Hospital_Management_System
             Console.WriteLine("\n=== All Patients ===");
 
 
-            List<Patient> patients =
-                context.Patients.ToList();
-
-
-
-            if (!patients.Any())
+            foreach (Patient p in context.Patients)
             {
-                Console.WriteLine("No patients found.");
-                return;
-            }
-
-
-
-            foreach (Patient p in patients)
-            {
-                Console.WriteLine("----------------");
-                Console.WriteLine($"ID: {p.patiendId}");
-                Console.WriteLine($"Name: {p.patientName}");
-                Console.WriteLine($"Age: {p.patientAge}");
-                Console.WriteLine($"Gender: {p.patientGender}");
-                Console.WriteLine($"Phone: {p.patientPhone}");
-                Console.WriteLine($"Email: {p.patientEmail}");
-                Console.WriteLine($"Blood: {p.patientBloodType}");
+                Console.WriteLine($"ID: {p.patiendId}  |  Name: {p.patientName}  |  Age: {p.patientAge}" +
+                                  $"  |  Gender: {p.patientGender}  |  Blood Type: {p.patientBloodType}" +
+                                  $"  |  Phone: {p.patientPhone}  |  Email: {p.patientEmail}");
             }
 
         }
@@ -148,9 +131,10 @@ namespace Hospital_Management_System
         // 4 View Doctors By Specialization
         //*************************************************************//
 
-        public static void ViewAllDoctorsBySpecialization(
-            HospitalContext context)
+        public static void ViewAllDoctorsBySpecialization(HospitalContext context)
         {
+            Console.WriteLine("\n=== Search Doctors by Specialization ===");
+
 
             Console.Write("Enter Specialization: ");
             string specialization = Console.ReadLine();
@@ -167,23 +151,14 @@ namespace Hospital_Management_System
 
 
 
-            if (!doctors.Any())
-            {
-                Console.WriteLine("No doctors found.");
-                return;
-            }
-
-
-
             foreach (Doctor d in doctors)
             {
-                Console.WriteLine("----------------");
-                Console.WriteLine($"ID: {d.doctorId}");
-                Console.WriteLine($"Name: {d.doctorName}");
-                Console.WriteLine($"Specialization: {d.doctorSpecialization}");
-                Console.WriteLine($"Phone: {d.doctorPhone}");
-                Console.WriteLine($"Fee: {d.consultationFee}");
+                Console.WriteLine($"ID: {d.doctorId}  |  Name: {d.doctorName}" +
+                                  $"  |  Phone: {d.doctorPhone}  |  Fee: {d.consultationFee:C}");
             }
+
+
+
 
         }
 
@@ -196,19 +171,21 @@ namespace Hospital_Management_System
 
         public static void AddAvailableSlot(HospitalContext context)
         {
+            Console.WriteLine("\n=== Add Available Slot for Doctor ===");
+
+            foreach (Doctor d in context.Doctors)
+            {
+                Console.WriteLine($"  ID: {d.doctorId}  |  {d.doctorName}  ({d.doctorSpecialization})");
+            }
 
             Console.Write("Enter Doctor ID: ");
 
-            int doctorId =
-                int.Parse(Console.ReadLine());
-
-
+            int doctorId =int.Parse(Console.ReadLine());
 
             Doctor doctor =
                 context.Doctors
                 .FirstOrDefault(d =>
                 d.doctorId == doctorId);
-
 
 
             if (doctor == null)
@@ -217,22 +194,26 @@ namespace Hospital_Management_System
                 return;
             }
 
-
+            bool result = context.Doctors.Any(d => d.doctorId == doctorId);
+            if (result == false)
+            {
+                Console.WriteLine("doctor not found please insert a correct Id");
+                return;
+            }
 
             Console.Write("Slot Date: ");
             string date = Console.ReadLine();
 
-
-
             Console.Write("Slot Time: ");
             string time = Console.ReadLine();
 
+            int slotId = context.AvailableSlots.Count + 1;
 
 
             context.AvailableSlots.Add(
                 new AvailableSlot
                 {
-                    slotId = context.AvailableSlots.Count + 1,
+                    slotId = slotId,
                     doctorId = doctorId,
                     slotDate = date,
                     slotTime = time,
@@ -241,7 +222,7 @@ namespace Hospital_Management_System
 
 
 
-            Console.WriteLine("Slot added successfully");
+            Console.WriteLine($"Slot added successfully with slotId: {slotId}");
         }
 
         // 6 Book Appointment
